@@ -3,7 +3,7 @@ import { Form, Input, Button, InputNumber } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 
 const layout = {
-  labelCol: { span: 2 },
+  labelCol: { span: 4 },
   wrapperCol: { span: 4 },
 };
 
@@ -11,6 +11,12 @@ const buttonItemLayout = {
   wrapperCol: {
     span: 14,
     offset: 2,
+  },
+};
+
+const attackLayout = {
+  wrapperCol: {
+    span: 14,
   },
 };
 
@@ -96,7 +102,7 @@ const HeroGenerator = () => {
         <Form.Item label='Respawn Time' name='respawnTime'>
           <InputNumber placeholder={`Respawn time`} />
         </Form.Item>
-        <Form.Item label='Attack Range' name='attackRange'>
+        <Form.Item label='Attack Range' name='attackRange' {...attackLayout}>
           <div style={{}}>
             {attackRange.map((d, i) => {
               return (
