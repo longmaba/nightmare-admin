@@ -41,6 +41,10 @@ const HeroGenerator = () => {
     new Array(9).fill(new Array(9).fill(false))
   );
 
+  const [purifyRange, setPurifyRange] = useState(
+    new Array(9).fill(new Array(9).fill(false))
+  );
+
   const onClickAttackRange = (x, y) => {
     let tmp = [...attackRange];
     let tmp2 = [...tmp[y]];
@@ -49,10 +53,18 @@ const HeroGenerator = () => {
     setAttackRange(tmp);
   };
 
+  const onClickPurifyRange = (x, y) => {
+    let tmp = [...purifyRange];
+    let tmp2 = [...tmp[y]];
+    tmp2[x] = !purifyRange[y][x];
+    tmp[y] = tmp2;
+    setPurifyRange(tmp);
+  };
+
   const onFinish = (values) => {
     const {
       name,
-      prefab,
+      model,
       hp,
       attack,
       SP,
@@ -62,7 +74,7 @@ const HeroGenerator = () => {
     } = values;
     setHeroJson({
       name,
-      prefab,
+      model,
       stats: {
         hp,
         attack,
@@ -70,7 +82,8 @@ const HeroGenerator = () => {
         cooldown,
         redeployTime,
         respawnTime,
-        attackRange: convert2Dto1D(attackRange),
+        attackUp: convert2Dto1D(attackRange),
+        purifyGroundsUp: convert2Dto1D(purifyRange),
       },
     });
   };
@@ -81,8 +94,8 @@ const HeroGenerator = () => {
         <Form.Item label='Name' name='name'>
           <Input placeholder={`Hero's name`} />
         </Form.Item>
-        <Form.Item label='Prefab' name='prefab'>
-          <Input placeholder={`Prefab's name`} />
+        <Form.Item label='Prefab' name='model'>
+          <Input placeholder={`Model's name`} />
         </Form.Item>
         <Form.Item label='HP' name='hp'>
           <InputNumber placeholder={`Hero's HP`} />
@@ -113,14 +126,42 @@ const HeroGenerator = () => {
                         ...styles.cell,
                         backgroundColor:
                           (k === 4) & (i === 4)
-                            ? '#ffc478'
+                            ? '#ffc069'
                             : data
-                            ? '#75cfb8'
-                            : '#f0e5d8',
+                            ? '#69c0ff'
+                            : '#f0f0f0',
                       }}
                       onClick={() => {
                         if (k !== 4 || i !== 4) {
                           onClickAttackRange(k, i);
+                        }
+                      }}
+                    ></div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </Form.Item>
+        <Form.Item label='Purify Range' name='purifyRange' {...attackLayout}>
+          <div style={{}}>
+            {purifyRange.map((d, i) => {
+              return (
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  {d.map((data, k) => (
+                    <div
+                      style={{
+                        ...styles.cell,
+                        backgroundColor:
+                          (k === 4) & (i === 4)
+                            ? '#ffc069'
+                            : data
+                            ? '#69c0ff'
+                            : '#f0f0f0',
+                      }}
+                      onClick={() => {
+                        if (k !== 4 || i !== 4) {
+                          onClickPurifyRange(k, i);
                         }
                       }}
                     ></div>
