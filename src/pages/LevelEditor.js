@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Radio } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
 
 const colors = [
@@ -50,7 +50,7 @@ const LevelEditor = () => {
   const [form] = Form.useForm();
   const [levelJSON, setLevelJSON] = useState(undefined);
   const [terrainData, setTerrainData] = useState(
-    new Array(9).fill(new Array(12).fill(0))
+    new Array(9).fill(new Array(12).fill(1))
   );
   const [monsterPath, setMonsterPath] = useState(
     new Array(9).fill(new Array(12).fill(0))
@@ -60,6 +60,8 @@ const LevelEditor = () => {
 
   const [protectorStone, setProtectorStone] = useState([]);
   const [monsterGate, setMonsterGate] = useState([]);
+  const [selectedTerrain, setSelectedTerrain] = useState(1);
+  const [mobWave, setMobWave] = useState([]);
 
   const onFinish = (values) => {
     const {
@@ -73,49 +75,59 @@ const LevelEditor = () => {
       respawnTime,
     } = values;
     setLevelJSON({
-      name,
-      model,
-      stats: {
-        hp,
-        attack,
-        SP,
-        cooldown,
-        redeployTime,
-        respawnTime,
-      },
+      // name,
+      // model,
+      // stats: {
+      //   hp,
+      //   attack,
+      //   SP,
+      //   cooldown,
+      //   redeployTime,
+      //   respawnTime,
+      // },
+      // terrainData,
+      monsterGate,
+      protectorStone,
+      // monsterPath,
     });
   };
 
   const onClickLevelRange = (x, y) => {
     let tmp = [...terrainData];
     let tmp2 = [...tmp[y]];
-    if (terrainData[y][x] == 0) {
-      tmp2[x] = terrainData[y][x] + 1;
-    } else if (terrainData[y][x] === 5) {
-      // Monster Gate
-      tmp2[x] = 6;
-      let monsterTmp = monsterGate;
-      monsterTmp.push({ x, y: monsterPath.length - 1 - y });
-      setMonsterGate(monsterTmp);
-    } else if (terrainData[y][x] === 6) {
-      tmp2[x] = 7;
-      let monsterRemoved = monsterGate.filter(
-        (d) => d.x !== x && d.y !== monsterPath.length - 1 - y
-      );
-      console.log('abc');
-      console.log(monsterRemoved);
-      setMonsterGate(monsterRemoved);
-      let protectTmp = protectorStone;
-      protectTmp.push({ x, y: monsterPath.length - 1 - y });
-      setProtectorStone(protectTmp);
-    } else if (terrainData[y][x] >= 7) {
-      let protectorRemoved = protectorStone.filter(
-        (d) => d.x !== x && d.y !== monsterPath.length - 1 - y
-      );
-      setProtectorStone(protectorRemoved);
+    if (terrainData[y][x] === selectedTerrain) {
       tmp2[x] = 0;
+      if (selectedTerrain === 7) {
+        let protectTmp = protectorStone;
+        let protectorRemoved = protectTmp.filter(
+          (d) => !(d.x === x && d.y === terrainData.length - 1 - y)
+        );
+        setProtectorStone(protectorRemoved);
+      }
+      if (selectedTerrain === 6) {
+        let monsterTmp = monsterGate;
+        let monsterRemoved = monsterTmp.filter(
+          (d) => !(d.x === x && d.y === terrainData.length - 1 - y)
+        );
+        setMonsterGate(monsterRemoved);
+      }
     } else {
-      tmp2[x] = terrainData[y][x] + 2;
+      tmp2[x] = selectedTerrain;
+      if (selectedTerrain === 7) {
+        // Protector Stone
+        tmp2[x] = 1; // Default to Low Ground
+        let protectTmp = protectorStone;
+        protectTmp.push({ x, y: terrainData.length - 1 - y });
+        setProtectorStone(protectTmp);
+      }
+
+      if (selectedTerrain === 6) {
+        // Monster Gate
+        tmp2[x] = 1; // Default to Low Ground
+        let monsterTmp = monsterGate;
+        monsterTmp.push({ x, y: terrainData.length - 1 - y });
+        setMonsterGate(monsterTmp);
+      }
     }
     tmp[y] = tmp2;
     setTerrainData(tmp);
@@ -130,12 +142,6 @@ const LevelEditor = () => {
     tmp2[x] = tmpPaths.length;
     tmp[y] = tmp2;
     setMonsterPath(tmp);
-  };
-
-  const onClickGoal = (x, y) => {
-    let tmp = [...terrainData];
-    let tmp2 = [...tmp[y]];
-    setProtectorStone({ x, y });
   };
 
   const clearPaths = () => {
@@ -171,8 +177,6 @@ const LevelEditor = () => {
                           }}
                           onClick={() => {
                             onClickLevelRange(k, i);
-                            console.log(protectorStone);
-                            console.log(monsterGate);
                           }}
                         ></div>
                       );
@@ -181,69 +185,53 @@ const LevelEditor = () => {
                 );
               })}
             </div>
-            <div style={{ marginLeft: 40 }}>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[0] }}
-                ></div>
-                Empty Tile
-              </div>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[1] }}
-                ></div>
-                Low Ground
-              </div>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[3] }}
-                ></div>
-                High Ground
-              </div>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[5] }}
-                ></div>
-                Wall
-              </div>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[7] }}
-                ></div>
-                Protector Stone
-              </div>
-              <div>
-                <div
-                  style={{ ...styles.cell, backgroundColor: colors[6] }}
-                ></div>
-                Monster Gate
-              </div>
-            </div>
-          </div>
-        </Form.Item>
-        <Form.Item label='Goal and Start' name='terrainData' {...attackLayout}>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
-            <div>
-              {terrainData.map((d, i) => {
-                return (
-                  <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    {d.map((data, k) => {
-                      let backgroundColor = colors[data];
-                      return (
-                        <div
-                          style={{
-                            ...styles.cell,
-                            backgroundColor,
-                          }}
-                          onClick={() => {
-                            onClickGoal(k, i);
-                          }}
-                        ></div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
+            <div style={{ marginLeft: 40, maxWidth: 240 }}>
+              <Radio.Group
+                onChange={(e) => setSelectedTerrain(parseInt(e.target.value))}
+              >
+                <Radio value='0'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[0] }}
+                  ></div>
+                  Empty Tile
+                </Radio>
+                <Radio value='1'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[1] }}
+                  ></div>
+                  Low Ground
+                </Radio>
+                <Radio value='3'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[3] }}
+                  ></div>
+                  High Ground
+                </Radio>
+                <Radio value='5'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[5] }}
+                  ></div>
+                  Wall
+                </Radio>
+                <Radio value='7'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[7] }}
+                  ></div>
+                  Protector Stone
+                </Radio>
+                <Radio value='6'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[6] }}
+                  ></div>
+                  Monster Gate
+                </Radio>
+              </Radio.Group>
             </div>
           </div>
         </Form.Item>
