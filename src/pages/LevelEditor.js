@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 
-import { Form, Input, Button, Radio } from 'antd';
+import { Form, Input, Button, Radio, Typography } from 'antd';
 import TextArea from 'antd/lib/input/TextArea';
+
+const { Title } = Typography;
 
 const colors = [
   '#f0f0f0',
@@ -34,16 +36,23 @@ const attackLayout = {
 
 const convert2Dto1D = (array) => {
   let newArr = [];
-
+  console.log(array);
   for (var i = 0; i < array.length; i++) {
-    newArr = newArr.concat(array[i]);
+    for (let k = 0; k < array[i].length; k++) {
+      newArr.push(array[i][k]);
+    }
   }
 
-  for (var i = 0; i < newArr.length; i++) {
-    newArr[i] = newArr[i] ? 1 : 0;
-  }
-
+  console.log(newArr);
   return newArr;
+};
+
+const reverseArray = (array) => {
+  let cloneArr = [];
+  for (let i = 0; i < array.length; i++) {
+    cloneArr.push(array[array.length - 1 - i]);
+  }
+  return cloneArr;
 };
 
 const LevelEditor = () => {
@@ -52,42 +61,31 @@ const LevelEditor = () => {
   const [terrainData, setTerrainData] = useState(
     new Array(9).fill(new Array(12).fill(1))
   );
-  const [monsterPath, setMonsterPath] = useState(
-    new Array(9).fill(new Array(12).fill(0))
-  );
-
-  const [paths, setPaths] = useState([]);
 
   const [protectorStone, setProtectorStone] = useState([]);
   const [monsterGate, setMonsterGate] = useState([]);
   const [selectedTerrain, setSelectedTerrain] = useState(1);
-  const [mobWave, setMobWave] = useState([]);
+  const [mobWave, setMobWave] = useState([
+    {
+      name: 'Enemy',
+      amount: 0,
+      interval: 0,
+      beginAt: 0,
+      paths: [],
+      monsterPaths: new Array(9).fill(new Array(12).fill(0)),
+    },
+  ]);
 
   const onFinish = (values) => {
-    const {
-      name,
-      model,
-      hp,
-      attack,
-      SP,
-      cooldown,
-      redeployTime,
-      respawnTime,
-    } = values;
+    const { width, height, core } = values;
     setLevelJSON({
-      // name,
-      // model,
-      // stats: {
-      //   hp,
-      //   attack,
-      //   SP,
-      //   cooldown,
-      //   redeployTime,
-      //   respawnTime,
-      // },
-      // terrainData,
+      width,
+      height,
+      core,
+      terrainData: convert2Dto1D(reverseArray(terrainData)),
       monsterGate,
       protectorStone,
+      mobWave: mobWave.map(({ monsterPaths, ...rest }) => rest),
       // monsterPath,
     });
   };
@@ -133,20 +131,51 @@ const LevelEditor = () => {
     setTerrainData(tmp);
   };
 
-  const onClickMonsterPath = (x, y) => {
-    let tmpPaths = paths;
-    tmpPaths.push({ x, y: monsterPath.length - 1 - y });
-    setPaths(tmpPaths);
-    let tmp = [...monsterPath];
+  const onClickMonsterPath = (x, y, i) => {
+    let tmpWave = [...mobWave];
+    let tmpPaths = tmpWave[i].paths;
+    tmpPaths.push({ x, y: terrainData.length - 1 - y });
+    tmpWave[i].paths = tmpPaths;
+    let tmp = [...tmpWave[i].monsterPaths];
     let tmp2 = [...tmp[y]];
     tmp2[x] = tmpPaths.length;
     tmp[y] = tmp2;
-    setMonsterPath(tmp);
+    tmpWave[i].monsterPaths = tmp;
+    setMobWave(tmpWave);
   };
 
-  const clearPaths = () => {
-    setMonsterPath(new Array(9).fill(new Array(12).fill(0)));
-    setPaths([]);
+  const clearPaths = (i) => {
+    let clearMonsterPath = new Array(9).fill(new Array(12).fill(0));
+    let paths = [];
+    let tmpWave = [...mobWave];
+    tmpWave[i].monsterPaths = clearMonsterPath;
+    tmpWave[i].paths = paths;
+    setMobWave(tmpWave);
+  };
+
+  const onClickAddNewWave = () => {
+    let tmpWave = [...mobWave];
+    tmpWave.push({
+      name: 'Enemy',
+      amount: 0,
+      interval: 0,
+      beginAt: 0,
+      paths: [],
+      monsterPaths: new Array(9).fill(new Array(12).fill(0)),
+    });
+    setMobWave(tmpWave);
+  };
+
+  const onClickRemoveWave = (i) => {
+    let tmpWave = [...mobWave];
+    let filtered = tmpWave.filter((value, index) => index !== i);
+    setMobWave(filtered);
+  };
+
+  const onEditingMobWave = (e, i) => {
+    let tmpWave = [...mobWave];
+    tmpWave[i][e.target.attributes.label.value] = e.target.value;
+    setMobWave(tmpWave);
   };
 
   return (
@@ -236,54 +265,97 @@ const LevelEditor = () => {
           </div>
         </Form.Item>
         <Form.Item label='Mob Waves' name='mobs'>
-          <Form.Item label='Name'>
-            <Input placeholder={`Monster's name`} />
-          </Form.Item>
-
-          <Form.Item label='Amount'>
-            <Input placeholder={`Amount`} />
-          </Form.Item>
-
-          <Form.Item label='Begin At'>
-            <Input placeholder={`Start`} />
-          </Form.Item>
-
-          <Form.Item label='Paths'>
-            {terrainData.map((d, i) => {
-              return (
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  {d.map((data, k) => {
-                    let backgroundColor = colors[data];
+          {mobWave.map((wave, i) => {
+            return (
+              <>
+                {' '}
+                <Title level={5}>Wave {i + 1}</Title>
+                <Form.Item label='Name'>
+                  <Input
+                    placeholder={`Monster's name`}
+                    label='name'
+                    onChange={(e) => onEditingMobWave(e, i)}
+                  />
+                </Form.Item>
+                <Form.Item label='Amount'>
+                  <Input
+                    placeholder={`Amount`}
+                    label='amount'
+                    onChange={(e) => onEditingMobWave(e, i)}
+                  />
+                </Form.Item>
+                <Form.Item label='Interval'>
+                  <Input
+                    placeholder={`Interval`}
+                    label='interval'
+                    onChange={(e) => onEditingMobWave(e, i)}
+                  />
+                </Form.Item>
+                <Form.Item label='Begin At'>
+                  <Input
+                    placeholder={`Start`}
+                    label='beginAt'
+                    onChange={(e) => onEditingMobWave(e, i)}
+                  />
+                </Form.Item>
+                <Form.Item label='Paths'>
+                  {terrainData.map((d, y) => {
                     return (
-                      <div
-                        style={{
-                          ...styles.cell,
-                          backgroundColor,
-                        }}
-                        onClick={() => {
-                          onClickMonsterPath(k, i);
-                          console.log(paths);
-                        }}
-                      >
-                        {monsterPath[i][k] !== 0
-                          ? monsterPath[i][k]
-                          : undefined}
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        {d.map((data, x) => {
+                          let backgroundColor = colors[data];
+                          return (
+                            <div
+                              style={{
+                                ...styles.cell,
+                                backgroundColor,
+                              }}
+                              onClick={() => {
+                                onClickMonsterPath(x, y, i);
+                              }}
+                            >
+                              {wave.monsterPaths[y][x] !== 0
+                                ? wave.monsterPaths[y][x]
+                                : undefined}
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}
-                </div>
-              );
-            })}
+                </Form.Item>
+                <Button
+                  style={{ marginTop: 20 }}
+                  type='primary'
+                  onClick={() => {
+                    clearPaths(i);
+                  }}
+                >
+                  Clear
+                </Button>
+                {mobWave.length > 1 && (
+                  <Button
+                    style={{ marginTop: 20, marginLeft: 20 }}
+                    type='primary'
+                    onClick={() => {
+                      onClickRemoveWave(i);
+                    }}
+                  >
+                    Remove Wave
+                  </Button>
+                )}
+              </>
+            );
+          })}
+          <Form.Item>
+            <Button
+              style={{ marginTop: 20 }}
+              type='primary'
+              onClick={() => onClickAddNewWave()}
+            >
+              Add New Wave
+            </Button>
           </Form.Item>
-          <Button
-            style={{ marginTop: 20 }}
-            type='primary'
-            onClick={() => {
-              clearPaths();
-            }}
-          >
-            Clear
-          </Button>
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
           <Button type='primary' htmlType='submit'>
