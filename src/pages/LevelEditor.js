@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import { Form, Input, Button, Radio, Typography } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+import { Form, Input, Button, Radio, Typography } from 'antd';
+import TextArea from 'antd/lib/input/TextArea';
 
 const { Title } = Typography;
 
 const colors = [
-  "#f0f0f0",
-  "#876800",
-  "#876800",
-  "#d46b08",
-  "#d46b08",
-  "#262626",
-  "#9254de",
-  "#13c2c2",
+  '#1f1f1f',
+  '#ffffff',
+  '#ffffff',
+  '#d9d9d9',
+  '#d9d9d9',
+  '#faad14',
+  '#cf1322',
+  '#1890ff',
 ];
 
 const layout = {
@@ -60,14 +60,16 @@ const reverseArray = (array) => {
 const LevelEditor = () => {
   const [form] = Form.useForm();
   const [levelJSON, setLevelJSON] = useState(undefined);
-  const [terrainData, setTerrainData] = useState(new Array(9).fill(new Array(12).fill(1)));
+  const [terrainData, setTerrainData] = useState(
+    new Array(9).fill(new Array(12).fill(1))
+  );
 
   const [protectorStone, setProtectorStone] = useState([]);
   const [monsterGate, setMonsterGate] = useState([]);
   const [selectedTerrain, setSelectedTerrain] = useState(1);
   const [mobWave, setMobWave] = useState([
     {
-      name: "Enemy",
+      name: 'Enemy',
       amount: 0,
       interval: 0,
       beginAt: 0,
@@ -93,7 +95,7 @@ const LevelEditor = () => {
     let tmp = [...terrainData];
     let tmp2 = [...tmp[y]];
     if (terrainData[y][x] === selectedTerrain) {
-      tmp2[x] = 0;
+      tmp2[x] = 1;
       if (selectedTerrain === 7) {
         let protectTmp = protectorStone;
         let protectorRemoved = protectTmp.filter(
@@ -153,7 +155,7 @@ const LevelEditor = () => {
   const onClickAddNewWave = () => {
     let tmpWave = [...mobWave];
     tmpWave.push({
-      name: "Enemy",
+      name: 'Enemy',
       amount: 0,
       interval: 0,
       beginAt: 0,
@@ -177,22 +179,22 @@ const LevelEditor = () => {
 
   return (
     <>
-      <Form {...layout} layout={"horizontal"} form={form} onFinish={onFinish}>
-        <Form.Item label="Width" name="width">
+      <Form {...layout} layout={'horizontal'} form={form} onFinish={onFinish}>
+        <Form.Item label='Width' name='width'>
           <Input placeholder={`Level's width`} />
         </Form.Item>
-        <Form.Item label="Height" name="height">
+        <Form.Item label='Height' name='height'>
           <Input placeholder={`Level's height`} />
         </Form.Item>
-        <Form.Item label="Core" name="core">
+        <Form.Item label='Core' name='core'>
           <Input placeholder={`Core's number`} />
         </Form.Item>
-        <Form.Item label="Level Map" name="terrainData" {...attackLayout}>
-          <div style={{ display: "flex", flexDirection: "row" }}>
+        <Form.Item label='Level Map' name='terrainData' {...attackLayout}>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
             <div>
               {terrainData.map((d, i) => {
                 return (
-                  <div style={{ display: "flex", flexDirection: "row" }}>
+                  <div style={{ display: 'flex', flexDirection: 'row' }}>
                     {d.map((data, k) => {
                       let backgroundColor = colors[data];
                       return (
@@ -211,80 +213,94 @@ const LevelEditor = () => {
                 );
               })}
             </div>
-            <div style={{ marginLeft: 40, maxWidth: 240 }}>
-              <Radio.Group onChange={(e) => setSelectedTerrain(parseInt(e.target.value))}>
-                <Radio value="0">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[0] }}></div>
-                  Empty Tile
+            <div style={{ marginLeft: 40, maxWidth: 200 }}>
+              <Radio.Group
+                onChange={(e) => setSelectedTerrain(parseInt(e.target.value))}
+              >
+                <Radio value='0'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[0] }}
+                  ></div>
+                  Abyss
                 </Radio>
-                <Radio value="1">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[1] }}></div>
+                <Radio value='1'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[1] }}
+                  ></div>
                   Low Ground
                 </Radio>
-                <Radio value="3">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[3] }}></div>
+                <Radio value='3'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[3] }}
+                  ></div>
                   High Ground
                 </Radio>
-                <Radio value="5">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[5] }}></div>
+                <Radio value='5'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[5] }}
+                  ></div>
                   Wall
                 </Radio>
-                <Radio value="7">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[7] }}></div>
+                <Radio value='7'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[7] }}
+                  ></div>
                   Protector Stone
                 </Radio>
-                <Radio value="6">
-                  {" "}
-                  <div style={{ ...styles.cell, backgroundColor: colors[6] }}></div>
+                <Radio value='6'>
+                  {' '}
+                  <div
+                    style={{ ...styles.cell, backgroundColor: colors[6] }}
+                  ></div>
                   Monster Gate
                 </Radio>
               </Radio.Group>
             </div>
           </div>
         </Form.Item>
-        <Form.Item label="Mob Waves" name="mobs" {...attackLayout}>
+        <Form.Item label='Mob Waves' name='mobs' {...attackLayout}>
           {mobWave.map((wave, i) => {
             return (
               <>
-                {" "}
+                {' '}
                 <Title level={5}>Wave {i + 1}</Title>
-                <Form.Item label="Name">
+                <Form.Item label='Name'>
                   <Input
                     placeholder={`Monster's name`}
-                    label="name"
+                    label='name'
                     onChange={(e) => onEditingMobWave(e, i)}
                   />
                 </Form.Item>
-                <Form.Item label="Amount">
+                <Form.Item label='Amount'>
                   <Input
                     placeholder={`Amount`}
-                    label="amount"
+                    label='amount'
                     onChange={(e) => onEditingMobWave(e, i)}
                   />
                 </Form.Item>
-                <Form.Item label="Interval">
+                <Form.Item label='Interval'>
                   <Input
                     placeholder={`Interval`}
-                    label="interval"
+                    label='interval'
                     onChange={(e) => onEditingMobWave(e, i)}
                   />
                 </Form.Item>
-                <Form.Item label="Begin At">
+                <Form.Item label='Begin At'>
                   <Input
                     placeholder={`Start`}
-                    label="beginAt"
+                    label='beginAt'
                     onChange={(e) => onEditingMobWave(e, i)}
                   />
                 </Form.Item>
-                <Form.Item label="Paths">
+                <Form.Item label='Paths'>
                   {terrainData.map((d, y) => {
                     return (
-                      <div style={{ display: "flex", flexDirection: "row" }}>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
                         {d.map((data, x) => {
                           let backgroundColor = colors[data];
                           return (
@@ -297,7 +313,9 @@ const LevelEditor = () => {
                                 onClickMonsterPath(x, y, i);
                               }}
                             >
-                              {wave.monsterPaths[y][x] !== 0 ? wave.monsterPaths[y][x] : undefined}
+                              {wave.monsterPaths[y][x] !== 0
+                                ? wave.monsterPaths[y][x]
+                                : undefined}
                             </div>
                           );
                         })}
@@ -307,7 +325,7 @@ const LevelEditor = () => {
                 </Form.Item>
                 <Button
                   style={{ marginTop: 20 }}
-                  type="primary"
+                  type='primary'
                   onClick={() => {
                     clearPaths(i);
                   }}
@@ -317,7 +335,7 @@ const LevelEditor = () => {
                 {mobWave.length > 1 && (
                   <Button
                     style={{ marginTop: 20, marginLeft: 20 }}
-                    type="primary"
+                    type='primary'
                     onClick={() => {
                       onClickRemoveWave(i);
                     }}
@@ -329,13 +347,17 @@ const LevelEditor = () => {
             );
           })}
           <Form.Item>
-            <Button style={{ marginTop: 20 }} type="primary" onClick={() => onClickAddNewWave()}>
+            <Button
+              style={{ marginTop: 20 }}
+              type='primary'
+              onClick={() => onClickAddNewWave()}
+            >
               Add New Wave
             </Button>
           </Form.Item>
         </Form.Item>
         <Form.Item {...buttonItemLayout}>
-          <Button type="primary" htmlType="submit">
+          <Button type='primary' htmlType='submit'>
             Submit
           </Button>
         </Form.Item>
@@ -350,11 +372,11 @@ const styles = {
     width: 30,
     height: 30,
     borderWidth: 1,
-    backgroundColor: "white",
-    border: "1px dashed rgba(1, 1, 1, .35)",
-    justifyContent: "center",
-    textAlign: "center",
-    cursor: "default",
+    backgroundColor: 'white',
+    border: '1px dashed rgba(1, 1, 1, .35)',
+    justifyContent: 'center',
+    textAlign: 'center',
+    cursor: 'default',
   },
 };
 
