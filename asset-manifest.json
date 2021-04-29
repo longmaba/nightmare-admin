@@ -1,26 +1,26 @@
 {
   "files": {
     "main.css": "/nightmare-admin/static/css/main.d3705f58.chunk.css",
-    "main.js": "/nightmare-admin/static/js/main.cfe04e41.chunk.js",
-    "main.js.map": "/nightmare-admin/static/js/main.cfe04e41.chunk.js.map",
+    "main.js": "/nightmare-admin/static/js/main.41042bf0.chunk.js",
+    "main.js.map": "/nightmare-admin/static/js/main.41042bf0.chunk.js.map",
     "runtime-main.js": "/nightmare-admin/static/js/runtime-main.071191b5.js",
     "runtime-main.js.map": "/nightmare-admin/static/js/runtime-main.071191b5.js.map",
     "static/css/2.fc2db407.chunk.css": "/nightmare-admin/static/css/2.fc2db407.chunk.css",
-    "static/js/2.eb408b9d.chunk.js": "/nightmare-admin/static/js/2.eb408b9d.chunk.js",
-    "static/js/2.eb408b9d.chunk.js.map": "/nightmare-admin/static/js/2.eb408b9d.chunk.js.map",
+    "static/js/2.eda876a6.chunk.js": "/nightmare-admin/static/js/2.eda876a6.chunk.js",
+    "static/js/2.eda876a6.chunk.js.map": "/nightmare-admin/static/js/2.eda876a6.chunk.js.map",
     "static/js/3.7d66d1d8.chunk.js": "/nightmare-admin/static/js/3.7d66d1d8.chunk.js",
     "static/js/3.7d66d1d8.chunk.js.map": "/nightmare-admin/static/js/3.7d66d1d8.chunk.js.map",
     "index.html": "/nightmare-admin/index.html",
     "static/css/2.fc2db407.chunk.css.map": "/nightmare-admin/static/css/2.fc2db407.chunk.css.map",
     "static/css/main.d3705f58.chunk.css.map": "/nightmare-admin/static/css/main.d3705f58.chunk.css.map",
-    "static/js/2.eb408b9d.chunk.js.LICENSE.txt": "/nightmare-admin/static/js/2.eb408b9d.chunk.js.LICENSE.txt",
+    "static/js/2.eda876a6.chunk.js.LICENSE.txt": "/nightmare-admin/static/js/2.eda876a6.chunk.js.LICENSE.txt",
     "static/media/App.css": "/nightmare-admin/static/media/logo.001825bc.png"
   },
   "entrypoints": [
     "static/js/runtime-main.071191b5.js",
     "static/css/2.fc2db407.chunk.css",
-    "static/js/2.eb408b9d.chunk.js",
+    "static/js/2.eda876a6.chunk.js",
     "static/css/main.d3705f58.chunk.css",
-    "static/js/main.cfe04e41.chunk.js"
+    "static/js/main.41042bf0.chunk.js"
   ]
 }
