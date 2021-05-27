@@ -36,7 +36,6 @@ const attackLayout = {
 
 const convert2Dto1D = (array) => {
   let newArr = [];
-  console.log(array);
   for (var i = 0; i < array.length; i++) {
     for (let k = 0; k < array[i].length; k++) {
       if (array[i][k] === 7 || array[i][k] === 6) {
@@ -49,6 +48,12 @@ const convert2Dto1D = (array) => {
   return newArr;
 };
 
+const convert1Dto2D = (array, w) => {
+  let newArr = [];
+  while (array.length) newArr.push(array.splice(0, w));
+  return newArr;
+};
+
 const reverseArray = (array) => {
   let cloneArr = [];
   for (let i = 0; i < array.length; i++) {
@@ -57,15 +62,32 @@ const reverseArray = (array) => {
   return cloneArr;
 };
 
+const getTerrainData = (terrain, monsterGates, protectorStones) => {
+  let tmpArray = reverseArray(convert1Dto2D(terrain, 12));
+  monsterGates.map((d) => {
+    tmpArray[tmpArray.length - 1 - d.y][d.x] = 6;
+  });
+  protectorStones.map((d) => {
+    tmpArray[tmpArray.length - 1 - d.y][d.x] = 7;
+  });
+  console.log(tmpArray);
+  return tmpArray;
+};
+
+const fillMonsterPath = (paths) => {
+  let monsterPaths = new Array(108).fill(0);
+  for (let i = 0; i < paths.length; i++) {
+    monsterPaths[12 * (8 - paths[i].y) + paths[i].x] = i + 1;
+  }
+  return convert1Dto2D(monsterPaths, 12);
+};
+
 const LevelEditor = () => {
   const [form] = Form.useForm();
   const [levelJSON, setLevelJSON] = useState(undefined);
   const [terrainData, setTerrainData] = useState(
     new Array(9).fill(new Array(12).fill(1))
   );
-
-  const [protectorStone, setProtectorStone] = useState([]);
-  const [monsterGate, setMonsterGate] = useState([]);
   const [selectedTerrain, setSelectedTerrain] = useState(1);
   const [mobWave, setMobWave] = useState([
     {
@@ -80,53 +102,42 @@ const LevelEditor = () => {
 
   const onFinish = (values) => {
     const { width, height, core } = values;
+    const { mons, prot } = getGatewaysPos(terrainData);
     setLevelJSON({
       width,
       height,
       core,
       terrainData: convert2Dto1D(reverseArray(terrainData)),
-      monsterGate,
-      protectorStone,
+      monsterGate: mons,
+      protectorStone: prot,
       mobWave: mobWave.map(({ monsterPaths, ...rest }) => rest),
     });
   };
 
-  // TODO: 123
+  const getGatewaysPos = (array) => {
+    let tmp = [...array];
+    let mons = [];
+    let prot = [];
+    for (let i = 0; i < tmp.length; i++) {
+      for (let k = 0; k < tmp[i].length; k++) {
+        if (tmp[i][k] === 7) {
+          prot.push({ x: k, y: tmp.length - 1 - i });
+        }
+        if (tmp[i][k] === 6) {
+          mons.push({ x: k, y: tmp.length - 1 - i });
+        }
+      }
+    }
+    return { mons, prot };
+  };
 
   const onClickLevelRange = (x, y) => {
     let tmp = [...terrainData];
     let tmp2 = [...tmp[y]];
     if (terrainData[y][x] === selectedTerrain) {
       tmp2[x] = 1;
-      if (selectedTerrain === 7) {
-        let protectTmp = protectorStone;
-        let protectorRemoved = protectTmp.filter(
-          (d) => !(d.x === x && d.y === terrainData.length - 1 - y)
-        );
-        setProtectorStone(protectorRemoved);
-      }
-      if (selectedTerrain === 6) {
-        let monsterTmp = monsterGate;
-        let monsterRemoved = monsterTmp.filter(
-          (d) => !(d.x === x && d.y === terrainData.length - 1 - y)
-        );
-        setMonsterGate(monsterRemoved);
-      }
     } else {
       tmp2[x] = selectedTerrain;
-      if (selectedTerrain === 7) {
-        // Protector Stone
-        let protectTmp = protectorStone;
-        protectTmp.push({ x, y: terrainData.length - 1 - y });
-        setProtectorStone(protectTmp);
-      }
-
-      if (selectedTerrain === 6) {
-        // Monster Gate
-        let monsterTmp = monsterGate;
-        monsterTmp.push({ x, y: terrainData.length - 1 - y });
-        setMonsterGate(monsterTmp);
-      }
     }
     tmp[y] = tmp2;
     setTerrainData(tmp);
@@ -179,9 +190,27 @@ const LevelEditor = () => {
     setMobWave(tmpWave);
   };
 
+  const importData = () => {
+    const data = JSON.parse(importJson);
+    setTerrainData(
+      getTerrainData(data.terrainData, data.monsterGate, data.protectorStone)
+    );
+    data.mobWave.map((d) => {
+      d.monsterPaths = fillMonsterPath(d.paths);
+    });
+    setMobWave(data.mobWave);
+  };
+
+  const [importJson, setImportJson] = useState();
+
   return (
     <>
       <Form {...layout} layout={'horizontal'} form={form} onFinish={onFinish}>
+        <Button onClick={importData}>Import</Button>
+        <TextArea
+          style={{ margin: 20 }}
+          onChange={(e) => setImportJson(e.target.value)}
+        ></TextArea>
         <Form.Item label='Width' name='width'>
           <Input placeholder={`Level's width`} />
         </Form.Item>
@@ -276,6 +305,7 @@ const LevelEditor = () => {
                     placeholder={`Monster's name`}
                     label='name'
                     onChange={(e) => onEditingMobWave(e, i)}
+                    value={wave.name}
                   />
                 </Form.Item>
                 <Form.Item label='Amount'>
@@ -283,6 +313,7 @@ const LevelEditor = () => {
                     placeholder={`Amount`}
                     label='amount'
                     onChange={(e) => onEditingMobWave(e, i)}
+                    value={wave.amount}
                   />
                 </Form.Item>
                 <Form.Item label='Interval'>
@@ -290,6 +321,7 @@ const LevelEditor = () => {
                     placeholder={`Interval`}
                     label='interval'
                     onChange={(e) => onEditingMobWave(e, i)}
+                    value={wave.interval}
                   />
                 </Form.Item>
                 <Form.Item label='Begin At'>
@@ -297,6 +329,7 @@ const LevelEditor = () => {
                     placeholder={`Start`}
                     label='beginAt'
                     onChange={(e) => onEditingMobWave(e, i)}
+                    value={wave.beginAt}
                   />
                 </Form.Item>
                 <Form.Item label='Paths'>
