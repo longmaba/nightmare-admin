@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/nightmare-admin/static/css/main.a5d3c749.chunk.css",
+    "main.js": "/nightmare-admin/static/js/main.5bac3149.chunk.js",
+    "main.js.map": "/nightmare-admin/static/js/main.5bac3149.chunk.js.map",
+    "runtime-main.js": "/nightmare-admin/static/js/runtime-main.071191b5.js",
+    "runtime-main.js.map": "/nightmare-admin/static/js/runtime-main.071191b5.js.map",
+    "static/css/2.fc2db407.chunk.css": "/nightmare-admin/static/css/2.fc2db407.chunk.css",
+    "static/js/2.004f0bde.chunk.js": "/nightmare-admin/static/js/2.004f0bde.chunk.js",
+    "static/js/2.004f0bde.chunk.js.map": "/nightmare-admin/static/js/2.004f0bde.chunk.js.map",
+    "static/js/3.7d66d1d8.chunk.js": "/nightmare-admin/static/js/3.7d66d1d8.chunk.js",
+    "static/js/3.7d66d1d8.chunk.js.map": "/nightmare-admin/static/js/3.7d66d1d8.chunk.js.map",
+    "index.html": "/nightmare-admin/index.html",
+    "static/css/2.fc2db407.chunk.css.map": "/nightmare-admin/static/css/2.fc2db407.chunk.css.map",
+    "static/css/main.a5d3c749.chunk.css.map": "/nightmare-admin/static/css/main.a5d3c749.chunk.css.map",
+    "static/js/2.004f0bde.chunk.js.LICENSE.txt": "/nightmare-admin/static/js/2.004f0bde.chunk.js.LICENSE.txt",
+    "static/media/App.css": "/nightmare-admin/static/media/logo.001825bc.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.071191b5.js",
+    "static/css/2.fc2db407.chunk.css",
+    "static/js/2.004f0bde.chunk.js",
+    "static/css/main.a5d3c749.chunk.css",
+    "static/js/main.5bac3149.chunk.js"
+  ]
+}
